@@ -5,7 +5,9 @@ defmodule RealWorldWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", RealWorldWeb do
+  scope "/", RealWorldWeb do
     pipe_through :api
+
+    resources "users", UserController
   end
 end
