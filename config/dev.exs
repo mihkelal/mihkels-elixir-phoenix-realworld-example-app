@@ -4,7 +4,7 @@ use Mix.Config
 config :real_world, RealWorld.Repo,
   username: "postgres",
   password: "postgres",
-  database: "real_world_dev",
+  database: "mihkels_real_world_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
