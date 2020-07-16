@@ -19,5 +19,10 @@ defmodule RealWorld.Account.User do
     |> validate_required([:username, :email, :password])
     |> unique_constraint(:username)
     |> unique_constraint(:email)
+    |> add_password_hash
+  end
+
+  def add_password_hash(%Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset) do
+    Ecto.Changeset.change(changeset, Argon2.add_hash(password, hash_key: :password))
   end
 end
