@@ -12,5 +12,7 @@ defmodule RealWorld.Repo.Migrations.CreateUsers do
       timestamps()
     end
 
+    create unique_index("users", [:username])
+    create unique_index("users", [:email])
   end
 end
