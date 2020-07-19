@@ -13,6 +13,7 @@ defmodule RealWorldWeb.SessionController do
             conn
             |> put_status(:created)
             |> render(RealWorldWeb.UserView, "login.json", user: user, jwt: jwt)
+
           {:error, message} ->
             conn
             |> put_status(:unprocessable_entity)

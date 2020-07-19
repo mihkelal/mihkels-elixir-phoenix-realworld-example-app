@@ -6,8 +6,20 @@ defmodule RealWorld.AccountTest do
   describe "users" do
     alias RealWorld.Account.User
 
-    @valid_attrs %{bio: "some bio", email: "some email", image: "some image", password: "some password", username: "some username"}
-    @update_attrs %{bio: "some updated bio", email: "some updated email", image: "some updated image", password: "some updated password", username: "some updated username"}
+    @valid_attrs %{
+      bio: "some bio",
+      email: "some email",
+      image: "some image",
+      password: "some password",
+      username: "some username"
+    }
+    @update_attrs %{
+      bio: "some updated bio",
+      email: "some updated email",
+      image: "some updated image",
+      password: "some updated password",
+      username: "some updated username"
+    }
     @invalid_attrs %{bio: nil, email: nil, image: nil, password: nil, username: nil}
 
     def user_fixture(attrs \\ %{}) do
