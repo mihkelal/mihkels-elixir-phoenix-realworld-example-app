@@ -6,6 +6,10 @@ defmodule RealWorldWeb.UserView do
     %{user: render_one(user, UserView, "user.json")}
   end
 
+  def render("error.json", %{message: message}) do
+    %{errors: %{"": [message]}}
+  end
+
   def render("user.json", %{user: user}) do
     %{id: user.id,
       username: user.username,

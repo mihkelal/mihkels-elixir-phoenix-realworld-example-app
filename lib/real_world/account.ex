@@ -85,4 +85,11 @@ defmodule RealWorld.Account do
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
   end
+
+  def authenticate_user(%{"email" => email, "password" => password}) do
+    case Repo.get_by(User, email: email) do
+      nil -> {:error, "User not found"}
+      user -> Argon2.check_pass(user, password, hash_key: :password)
+    end
+  end
 end
