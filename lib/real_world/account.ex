@@ -85,4 +85,18 @@ defmodule RealWorld.Account do
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
   end
+
+  def find_user_and_check_password(%{"email" => email, "password" => password}) do
+    case Repo.get_by(User, email: email) do
+      nil -> {:error, "User not found"}
+      user -> Argon2.check_pass(user, password, hash_key: :password)
+    end
+  end
+
+  def encode_and_sign_user_id(user) do
+    case RealWorld.Guardian.encode_and_sign(user, %{}, token_type: :access) do
+      {:ok, jwt, _} -> {:ok, jwt}
+      {:error, message} -> {:error, message}
+    end
+  end
 end

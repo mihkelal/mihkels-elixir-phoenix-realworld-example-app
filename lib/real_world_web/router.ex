@@ -11,5 +11,6 @@ defmodule RealWorldWeb.Router do
     resources "/users", UserController, only: [:create]
     get("/user", UserController, :show)
     put("/user", UserController, :update)
+    post("/users/login", SessionController, :create)
   end
 end
