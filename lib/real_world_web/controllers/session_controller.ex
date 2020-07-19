@@ -7,14 +7,14 @@ defmodule RealWorldWeb.SessionController do
 
   def create(conn, %{"user" => user_params}) do
     case Account.authenticate_user(user_params) do
+      {:ok, user, jwt} ->
+        conn
+        |> put_status(:created)
+        |> render(RealWorldWeb.UserView, "login.json", user: user, jwt: jwt)
       {:error, message} ->
         conn
         |> put_status(:unprocessable_entity)
         |> render(RealWorldWeb.UserView, "error.json", message: message)
-      {:ok, user} ->
-        conn
-        |> put_status(:created)
-        |> render(RealWorldWeb.UserView, "show.json", %{user: user})
     end
   end
 end

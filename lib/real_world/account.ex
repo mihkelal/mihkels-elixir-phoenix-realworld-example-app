@@ -89,7 +89,23 @@ defmodule RealWorld.Account do
   def authenticate_user(%{"email" => email, "password" => password}) do
     case Repo.get_by(User, email: email) do
       nil -> {:error, "User not found"}
-      user -> Argon2.check_pass(user, password, hash_key: :password)
+      user ->
+        case Argon2.check_pass(user, password, hash_key: :password) do
+          {:ok, user} ->
+            case token(user) do
+              {:ok, jwt} -> {:ok, user, jwt}
+              {:error, message} -> {:error, message}
+            end
+          {:error, message} ->
+            {:error, message}
+        end
+    end
+  end
+
+  defp token(user) do
+    case RealWorld.Guardian.encode_and_sign(user, %{}, token_type: :access) do
+      {:ok, jwt, _} -> {:ok, jwt}
+      {:error, message} -> {:error, message}
     end
   end
 end
