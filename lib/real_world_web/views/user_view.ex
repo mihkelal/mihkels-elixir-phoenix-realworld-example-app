@@ -2,6 +2,10 @@ defmodule RealWorldWeb.UserView do
   use RealWorldWeb, :view
   alias RealWorldWeb.UserView
 
+  def render("show.json", %{jwt: jwt, user: user}) do
+    %{user: Map.put(render_one(user, UserView, "user.json"), :token, jwt)}
+  end
+
   def render("show.json", %{user: user}) do
     %{user: render_one(user, UserView, "user.json")}
   end
@@ -11,15 +15,13 @@ defmodule RealWorldWeb.UserView do
   end
 
   def render("error.json", %{message: message}) do
-    %{errors: %{"": [message]}}
+    %{errors: %{message: [message]}}
   end
 
   def render("user.json", %{user: user}) do
     %{
-      id: user.id,
       username: user.username,
       email: user.email,
-      password: user.password,
       bio: user.bio,
       image: user.image
     }

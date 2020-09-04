@@ -7,10 +7,16 @@ defmodule RealWorldWeb.UserController do
   action_fallback RealWorldWeb.FallbackController
 
   def create(conn, %{"user" => user_params}) do
-    with {:ok, %User{} = user} <- Account.create_user(user_params) do
+    with {:ok, %User{} = user} <- Account.create_user(user_params),
+         {:ok, jwt} <- Account.encode_and_sign_user_id(user) do
       conn
       |> put_status(:created)
-      |> render("show.json", user: user)
+      |> render("show.json", jwt: jwt, user: user)
+    else
+      {:error, message} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(RealWorldWeb.UserView, "error.json", message: message)
     end
   end
 
