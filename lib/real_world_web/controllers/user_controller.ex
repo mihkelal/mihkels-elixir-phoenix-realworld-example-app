@@ -6,6 +6,8 @@ defmodule RealWorldWeb.UserController do
 
   action_fallback RealWorldWeb.FallbackController
 
+  plug Guardian.Plug.EnsureAuthenticated when action in [:show]
+
   def create(conn, %{"user" => user_params}) do
     with {:ok, %User{} = user} <- Account.create_user(user_params),
          {:ok, jwt} <- Account.encode_and_sign_user_id(user) do
@@ -20,9 +22,11 @@ defmodule RealWorldWeb.UserController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    user = Account.get_user!(id)
-    render(conn, "show.json", user: user)
+  def show(conn, _params) do
+    user = RealWorld.Guardian.Plug.current_resource(conn)
+    token = RealWorld.Guardian.Plug.current_token(conn)
+
+    render(conn, "show.json", jwt: token, user: user)
   end
 
   def update(conn, %{"id" => id, "user" => user_params}) do
