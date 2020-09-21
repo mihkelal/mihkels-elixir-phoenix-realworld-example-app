@@ -94,7 +94,7 @@ defmodule RealWorld.Account do
   end
 
   def encode_and_sign_user_id(user) do
-    case RealWorld.Guardian.encode_and_sign(user, %{}, token_type: :access) do
+    case RealWorldWeb.Guardian.encode_and_sign(user, %{}, token_type: :access) do
       {:ok, jwt, _} -> {:ok, jwt}
       {:error, message} -> {:error, message}
     end

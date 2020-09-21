@@ -23,8 +23,8 @@ defmodule RealWorldWeb.UserController do
   end
 
   def show(conn, _params) do
-    user = RealWorld.Guardian.Plug.current_resource(conn)
-    token = RealWorld.Guardian.Plug.current_token(conn)
+    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    token = RealWorldWeb.Guardian.Plug.current_token(conn)
 
     render(conn, "show.json", jwt: token, user: user)
   end

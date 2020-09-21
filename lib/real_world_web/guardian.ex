@@ -1,4 +1,4 @@
-defmodule RealWorld.Guardian do
+defmodule RealWorldWeb.Guardian do
   use Guardian, otp_app: :real_world
 
   alias RealWorld.{Repo, Account.User}
