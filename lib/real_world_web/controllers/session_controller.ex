@@ -26,10 +26,4 @@ defmodule RealWorldWeb.SessionController do
         |> render(RealWorldWeb.UserView, "error.json", message: message)
     end
   end
-
-  def auth_error(conn, {_type, _reason}, _opts) do
-    conn
-    |> put_status(:forbidden)
-    |> render(RealWorldWeb.UserView, "error.json", message: "not authenticated")
-  end
 end
