@@ -16,5 +16,7 @@ defmodule RealWorldWeb.Router do
     get("/user", UserController, :show)
     put("/user", UserController, :update)
     post("/users/login", SessionController, :create)
+
+    get("/profiles/:username", ProfileController, :show)
   end
 end
