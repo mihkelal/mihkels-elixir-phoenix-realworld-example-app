@@ -6,10 +6,6 @@ defmodule RealWorldWeb.UserView do
     %{user: Map.put(render_one(user, UserView, "user.json"), :token, jwt)}
   end
 
-  def render("show.json", %{user: user}) do
-    %{user: render_one(user, UserView, "user.json")}
-  end
-
   def render("login.json", %{user: user, jwt: jwt}) do
     %{user: Map.put(render_one(user, UserView, "user.json"), :token, jwt)}
   end

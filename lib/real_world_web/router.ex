@@ -3,6 +3,10 @@ defmodule RealWorldWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+
+    plug(Guardian.Plug.Pipeline, module: RealWorldWeb.Guardian, error_handler: RealWorldWeb.AuthErrorHandler)
+    plug(Guardian.Plug.VerifyHeader, realm: "Token")
+    plug(Guardian.Plug.LoadResource, allow_blank: true)
   end
 
   scope "/", RealWorldWeb do

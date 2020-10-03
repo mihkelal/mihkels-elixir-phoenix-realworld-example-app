@@ -26,8 +26,8 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :real_world, RealWorld.Guardian,
-  issuer: "real_world",
+config :real_world, RealWorldWeb.Guardian,
+  issuer: "RealWorld",
   secret_key: "mjHO9Rj6PbkIds7aTf33VCZ+NTyWWsYM0zhYdVn1+JbIUC6fcgimO9Tpa8a5UJj9"
 
 # Import environment specific config. This must remain at the bottom
