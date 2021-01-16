@@ -2,6 +2,9 @@ defmodule RealWorld.Account.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @required_fields ~w(email username password)a
+  @optional_fields ~w(bio image)a
+
   schema "users" do
     field :bio, :string
     field :email, :string
@@ -15,8 +18,8 @@ defmodule RealWorld.Account.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:username, :email, :password])
-    |> validate_required([:username, :email, :password])
+    |> cast(attrs, @required_fields ++ @optional_fields)
+    |> validate_required(@required_fields)
     |> unique_constraint(:username)
     |> unique_constraint(:email)
     |> add_password_hash
@@ -24,5 +27,9 @@ defmodule RealWorld.Account.User do
 
   def add_password_hash(%Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset) do
     Ecto.Changeset.change(changeset, Argon2.add_hash(password, hash_key: :password))
+  end
+
+  def add_password_hash(changeset) do
+    changeset
   end
 end
