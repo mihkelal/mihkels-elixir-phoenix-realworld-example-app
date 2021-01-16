@@ -29,11 +29,18 @@ defmodule RealWorldWeb.UserController do
     render(conn, "show.json", jwt: token, user: user)
   end
 
-  def update(conn, %{"id" => id, "user" => user_params}) do
-    user = Account.get_user!(id)
+  def update(conn, %{} = user_params) do
+    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
 
-    with {:ok, %User{} = user} <- Account.update_user(user, user_params) do
-      render(conn, "show.json", user: user)
+    case Account.update_user(user, user_params) do
+      {:ok, user} ->
+        token = RealWorldWeb.Guardian.Plug.current_token(conn)
+        render(conn, "show.json", jwt: token, user: user)
+
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(RealWorldWeb.ChangesetView, "error.json", changeset: changeset)
     end
   end
 end
