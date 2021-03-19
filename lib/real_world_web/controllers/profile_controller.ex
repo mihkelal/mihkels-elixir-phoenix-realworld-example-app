@@ -39,4 +39,24 @@ defmodule RealWorldWeb.ProfileController do
         send_resp(conn, 404, "")
     end
   end
+
+  def unfollow(conn, %{"username" => username}) do
+    case RealWorld.Account.get_user_by_username(username) do
+      %User{} = user ->
+        current_user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+
+        case Account.unfollow(current_user, user) do
+          {:ok, _following} ->
+            render(conn, "show.json", user: user, following: false)
+
+          {:error, changeset} ->
+            conn
+            |> put_status(:unprocessable_entity)
+            |> render("error.json", message: inspect(changeset.errors))
+        end
+
+      nil ->
+        send_resp(conn, 404, "")
+    end
+  end
 end

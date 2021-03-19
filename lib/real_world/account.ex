@@ -95,6 +95,12 @@ defmodule RealWorld.Account do
     |> Repo.insert()
   end
 
+  def unfollow(%User{} = follower, %User{} = followee) do
+    Following
+    |> Repo.get_by(follower_id: follower.id, followee_id: followee.id)
+    |> Repo.delete()
+  end
+
   def follows?(%User{} = follower, %User{} = followee) do
     Following
     |> from
