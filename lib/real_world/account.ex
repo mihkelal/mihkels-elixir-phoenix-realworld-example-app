@@ -6,6 +6,7 @@ defmodule RealWorld.Account do
   import Ecto.Query, warn: false
   alias RealWorld.Repo
 
+  alias RealWorld.Account.Following
   alias RealWorld.Account.User
 
   @doc """
@@ -86,6 +87,19 @@ defmodule RealWorld.Account do
   """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
+  end
+
+  def follow(%User{} = follower, %User{} = followee) do
+    %Following{}
+    |> Following.changeset(%{follower_id: follower.id, followee_id: followee.id})
+    |> Repo.insert()
+  end
+
+  def follows?(%User{} = follower, %User{} = followee) do
+    Following
+    |> from
+    |> where(follower_id: ^follower.id, followee_id: ^followee.id)
+    |> Repo.exists?()
   end
 
   def find_user_and_check_password(%{"email" => email, "password" => password}) do
