@@ -6,14 +6,14 @@ defmodule RealWorldWeb.ProfileController do
 
   action_fallback RealWorldWeb.FallbackController
 
-  plug Guardian.Plug.EnsureAuthenticated when action in [:follow]
+  plug Guardian.Plug.EnsureAuthenticated when action in [:follow, :unfollow]
 
   def show(conn, %{"username" => username}) do
     case RealWorld.Account.get_user_by_username(username) do
       %User{} = user ->
         current_user = RealWorldWeb.Guardian.Plug.current_resource(conn)
 
-        render(conn, "show.json", user: user, following: Account.follows?(current_user, user))
+        render(conn, "show.json", user: user, following: Account.following_exists?(current_user, user))
 
       nil ->
         send_resp(conn, 404, "")
@@ -25,7 +25,7 @@ defmodule RealWorldWeb.ProfileController do
       %User{} = user ->
         current_user = RealWorldWeb.Guardian.Plug.current_resource(conn)
 
-        case Account.follow(current_user, user) do
+        case Account.create_following(current_user, user) do
           {:ok, _following} ->
             render(conn, "show.json", user: user, following: true)
 
@@ -45,7 +45,7 @@ defmodule RealWorldWeb.ProfileController do
       %User{} = user ->
         current_user = RealWorldWeb.Guardian.Plug.current_resource(conn)
 
-        case Account.unfollow(current_user, user) do
+        case Account.delete_following(current_user, user) do
           {:ok, _following} ->
             render(conn, "show.json", user: user, following: false)
 

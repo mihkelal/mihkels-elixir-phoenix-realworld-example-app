@@ -18,7 +18,6 @@ defmodule RealWorldWeb.Router do
     post("/users/login", SessionController, :create)
 
     get("/profiles/:username", ProfileController, :show)
-
     post("/profiles/:username/follow", ProfileController, :follow)
     delete("/profiles/:username/follow", ProfileController, :unfollow)
   end
