@@ -2,6 +2,8 @@ defmodule RealWorld.Account.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias RealWorld.CMS.Article
+
   @required_fields ~w(email username password)a
   @optional_fields ~w(bio image)a
 
@@ -11,6 +13,7 @@ defmodule RealWorld.Account.User do
     field :image, :string
     field :password, :string
     field :username, :string
+    has_many :articles, Article
 
     timestamps()
   end
