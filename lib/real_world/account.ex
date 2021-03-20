@@ -6,7 +6,7 @@ defmodule RealWorld.Account do
   import Ecto.Query, warn: false
   alias RealWorld.Repo
 
-  alias RealWorld.Account.User
+  alias RealWorld.Account.{Following, User}
 
   @doc """
   Returns the list of users.
@@ -100,5 +100,24 @@ defmodule RealWorld.Account do
       {:ok, jwt, _} -> {:ok, jwt}
       {:error, message} -> {:error, message}
     end
+  end
+
+  def create_following(%User{} = follower, %User{} = followee) do
+    %Following{}
+    |> Following.changeset(%{follower_id: follower.id, followee_id: followee.id})
+    |> Repo.insert()
+  end
+
+  def delete_following(%User{} = follower, %User{} = followee) do
+    Following
+    |> Repo.get_by!(follower_id: follower.id, followee_id: followee.id)
+    |> Repo.delete()
+  end
+
+  def following_exists?(%User{} = follower, %User{} = followee) do
+    Following
+    |> from
+    |> where(follower_id: ^follower.id, followee_id: ^followee.id)
+    |> Repo.exists?()
   end
 end

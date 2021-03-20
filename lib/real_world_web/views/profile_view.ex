@@ -2,16 +2,20 @@ defmodule RealWorldWeb.ProfileView do
   use RealWorldWeb, :view
   alias RealWorldWeb.ProfileView
 
-  def render("show.json", %{user: user}) do
-    %{profile: render_one(user, ProfileView, "profile.json", as: :user)}
+  def render("show.json", %{user: user, following: following}) do
+    %{profile: render_one(user, ProfileView, "profile.json", as: :user, following: following)}
   end
 
-  def render("profile.json", %{user: user}) do
+  def render("profile.json", %{user: user, following: following}) do
     %{
       username: user.username,
       bio: user.bio,
       image: user.image,
-      following: false
+      following: following
     }
+  end
+
+  def render("error.json", %{message: message}) do
+    %{errors: %{message: [message]}}
   end
 end
