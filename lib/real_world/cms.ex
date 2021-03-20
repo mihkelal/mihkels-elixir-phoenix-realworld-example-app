@@ -6,10 +6,18 @@ defmodule RealWorld.CMS do
   import Ecto.Query, warn: false
   alias RealWorld.Repo
 
+  alias RealWorld.Account.User
   alias RealWorld.CMS.Article
 
   def list_articles do
     Repo.all(Article)
+  end
+
+  def list_user_articles(%User{} = user) do
+    Ecto.assoc(user, :articles)
+    |> join(:inner, [a], u in User, on: a.user_id == u.id)
+    |> preload(:user)
+    |> Repo.all()
   end
 
   def get_article!(id), do: Repo.get!(Article, id)
