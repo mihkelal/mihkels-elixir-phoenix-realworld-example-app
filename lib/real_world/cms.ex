@@ -24,6 +24,7 @@ defmodule RealWorld.CMS do
     |> preload(:user)
     |> limit(^limit)
     |> offset(^offset)
+    |> order_by(desc: :inserted_at)
     |> Repo.all()
   end
 
