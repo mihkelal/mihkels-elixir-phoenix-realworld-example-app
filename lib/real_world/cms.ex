@@ -8,18 +8,23 @@ defmodule RealWorld.CMS do
   import Ecto.Query, warn: false
   alias RealWorld.Repo
 
+  alias RealWorld.Account
   alias RealWorld.Account.User
   alias RealWorld.CMS.Article
 
-  def list_articles do
-    Repo.all(Article)
-  end
-
-  def list_user_articles(%User{} = user, limit: limit, offset: offset) do
+  def list_articles(author: author, limit: limit, offset: offset) do
     limit = limit || @default_article_pagination_limit
     offset = offset || @default_article_offset
 
-    Ecto.assoc(user, :articles)
+    case author do
+      nil ->
+        Article
+
+      author ->
+        author
+        |> Account.get_user_by_username()
+        |> Ecto.assoc(:articles)
+    end
     |> join(:inner, [a], u in User, on: a.user_id == u.id)
     |> preload(:user)
     |> limit(^limit)
