@@ -1,6 +1,7 @@
 defmodule RealWorldWeb.ArticleView do
   use RealWorldWeb, :view
   alias RealWorldWeb.ArticleView
+  alias RealWorldWeb.ProfileView
 
   def render("index.json", %{articles: articles}) do
     %{
@@ -15,12 +16,16 @@ defmodule RealWorldWeb.ArticleView do
 
   def render("article.json", %{article: article}) do
     %{
-      id: article.id,
       slug: article.slug,
       title: article.title,
       description: article.description,
       body: article.body,
-      favorites_count: article.favorites_count
+      tagList: [],
+      createdAt: article.inserted_at,
+      updatedAt: article.updated_at,
+      favorited: false,
+      favoritesCount: article.favorites_count,
+      author: render_one(article.user, ProfileView, "profile.json", as: :user, following: false)
     }
   end
 end
