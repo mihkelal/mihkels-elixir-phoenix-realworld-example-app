@@ -20,5 +20,7 @@ defmodule RealWorldWeb.Router do
     get("/profiles/:username", ProfileController, :show)
     post("/profiles/:username/follow", ProfileController, :follow)
     delete("/profiles/:username/follow", ProfileController, :unfollow)
+
+    resources "/articles", ArticleController, only: [:index]
   end
 end
