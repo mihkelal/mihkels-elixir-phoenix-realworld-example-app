@@ -2,6 +2,8 @@ defmodule RealWorld.CMS do
   @moduledoc """
   The CMS context.
   """
+  @default_article_pagination_limit 10
+  @default_article_offset 0
 
   import Ecto.Query, warn: false
   alias RealWorld.Repo
@@ -13,10 +15,15 @@ defmodule RealWorld.CMS do
     Repo.all(Article)
   end
 
-  def list_user_articles(%User{} = user) do
+  def list_user_articles(%User{} = user, limit: limit, offset: offset) do
+    limit = limit || @default_article_pagination_limit
+    offset = offset || @default_article_offset
+
     Ecto.assoc(user, :articles)
     |> join(:inner, [a], u in User, on: a.user_id == u.id)
     |> preload(:user)
+    |> limit(^limit)
+    |> offset(^offset)
     |> Repo.all()
   end
 

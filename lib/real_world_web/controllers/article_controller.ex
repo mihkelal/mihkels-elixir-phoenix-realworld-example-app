@@ -5,11 +5,11 @@ defmodule RealWorldWeb.ArticleController do
 
   action_fallback RealWorldWeb.FallbackController
 
-  def index(conn, _params) do
+  def index(conn, %{"limit" => limit, "offset" => offset} = _params) do
     articles =
       conn
       |> RealWorldWeb.Guardian.Plug.current_resource()
-      |> CMS.list_user_articles()
+      |> CMS.list_user_articles(limit: limit, offset: offset)
 
     render(conn, "index.json", articles: articles)
   end
