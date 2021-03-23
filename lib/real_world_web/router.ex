@@ -24,5 +24,6 @@ defmodule RealWorldWeb.Router do
     resources "/articles", ArticleController, only: [:index, :create]
     get "/articles/feed", ArticleController, :feed
     get("/articles/:slug", ArticleController, :show)
+    put("/articles/:slug", ArticleController, :update)
   end
 end
