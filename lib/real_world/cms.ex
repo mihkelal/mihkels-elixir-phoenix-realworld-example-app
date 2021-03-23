@@ -18,9 +18,9 @@ defmodule RealWorld.CMS do
       %User{} = user -> Ecto.assoc(user, :articles)
       nil -> Article
     end
+    |> default_articles_list_options
     |> limit(^params[:limit])
     |> offset(^params[:offset])
-    |> default_articles_list_options
     |> Repo.all()
   end
 
@@ -30,9 +30,9 @@ defmodule RealWorld.CMS do
       on: a.user_id == f.followee_id,
       where: f.follower_id == ^user.id
     )
+    |> default_articles_list_options
     |> limit(^params[:limit])
     |> offset(^params[:offset])
-    |> default_articles_list_options
     |> Repo.all()
   end
 
