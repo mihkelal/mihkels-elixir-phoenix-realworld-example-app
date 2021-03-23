@@ -4,7 +4,7 @@ defmodule RealWorld.CMS.Article do
 
   alias RealWorld.Account.User
 
-  @required_fields ~w(slug title description body favorites_count)a
+  @required_fields ~w(title description body user_id)a
 
   schema "articles" do
     field :body, :string
@@ -25,5 +25,20 @@ defmodule RealWorld.CMS.Article do
     |> assoc_constraint(:user)
     |> unique_constraint(:slug)
     |> unique_constraint(:title)
+    |> slugify_title()
+  end
+
+  defp slugify_title(%Ecto.Changeset{valid?: true, changes: %{title: title}} = changeset) do
+    put_change(changeset, :slug, slugify(title))
+  end
+
+  defp slugify_title(changeset) do
+    changeset
+  end
+
+  defp slugify(str) do
+    str
+    |> String.downcase()
+    |> String.replace(~r/[^\w-]+/u, "-")
   end
 end

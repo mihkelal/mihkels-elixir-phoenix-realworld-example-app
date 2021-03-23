@@ -21,7 +21,7 @@ defmodule RealWorldWeb.Router do
     post("/profiles/:username/follow", ProfileController, :follow)
     delete("/profiles/:username/follow", ProfileController, :unfollow)
 
-    resources "/articles", ArticleController, only: [:index]
+    resources "/articles", ArticleController, only: [:index, :create]
     get "/articles/feed", ArticleController, :feed
     get("/articles/:slug", ArticleController, :show)
   end

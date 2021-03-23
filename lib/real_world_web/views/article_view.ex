@@ -28,4 +28,8 @@ defmodule RealWorldWeb.ArticleView do
       author: render_one(article.user, ProfileView, "profile.json", as: :user, following: false)
     }
   end
+
+  def render("error.json", %{message: message}) do
+    %{errors: %{message: [message]}}
+  end
 end
