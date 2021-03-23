@@ -23,5 +23,6 @@ defmodule RealWorldWeb.Router do
 
     resources "/articles", ArticleController, only: [:index]
     get "/articles/feed", ArticleController, :feed
+    get("/articles/:slug", ArticleController, :show)
   end
 end
