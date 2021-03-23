@@ -15,6 +15,14 @@ defmodule RealWorld.Account.User do
     field :username, :string
     has_many :articles, Article
 
+    many_to_many :followees, __MODULE__,
+      join_through: RealWorld.Account.Following,
+      join_keys: [follower_id: :id, followee_id: :id]
+
+    many_to_many :followers, __MODULE__,
+      join_through: RealWorld.Account.Following,
+      join_keys: [followee_id: :id, follower_id: :id]
+
     timestamps()
   end
 
