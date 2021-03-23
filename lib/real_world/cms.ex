@@ -47,6 +47,14 @@ defmodule RealWorld.CMS do
 
   def get_article!(id), do: Repo.get!(Article, id)
 
+  def get_article_by_slug!(slug) do
+    Article
+    |> where(slug: ^slug)
+    |> join(:inner, [a], u in User, on: a.user_id == u.id)
+    |> preload(:user)
+    |> Repo.one!()
+  end
+
   def create_article(attrs \\ %{}) do
     %Article{}
     |> Article.changeset(attrs)

@@ -2,6 +2,7 @@ defmodule RealWorldWeb.ArticleController do
   use RealWorldWeb, :controller
 
   alias RealWorld.CMS
+  alias RealWorld.CMS.Article
 
   action_fallback RealWorldWeb.FallbackController
 
@@ -11,6 +12,13 @@ defmodule RealWorldWeb.ArticleController do
     articles = CMS.list_articles(%{author: params["author"], limit: limit, offset: offset})
 
     render(conn, "index.json", articles: articles)
+  end
+
+  def show(conn, %{"slug" => slug} = _params) do
+    case CMS.get_article_by_slug!(slug) do
+      %Article{} = article -> render(conn, "show.json", article: article)
+      nil -> send_resp(conn, 404, "")
+    end
   end
 
   def feed(conn, %{"limit" => limit, "offset" => offset} = _params) do
