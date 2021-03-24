@@ -25,5 +25,6 @@ defmodule RealWorldWeb.Router do
     get "/articles/feed", ArticleController, :feed
     get("/articles/:slug", ArticleController, :show)
     put("/articles/:slug", ArticleController, :update)
+    delete("/articles/:slug", ArticleController, :delete)
   end
 end
