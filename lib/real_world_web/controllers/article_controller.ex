@@ -40,6 +40,27 @@ defmodule RealWorldWeb.ArticleController do
     end
   end
 
+  def update(conn, %{"slug" => slug, "article" => article_params} = _params) do
+    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    article = CMS.get_article_by_slug!(slug)
+
+    with true <- user == article.user,
+         {:ok, article} <- CMS.update_article(article, article_params) do
+      conn
+      |> render("show.json", article: Repo.preload(article, :user))
+    else
+      false ->
+        conn
+        |> put_status(:unauthorized)
+        |> render("error.json", message: "You can only change your own articles")
+
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render("error.json", message: inspect(changeset.errors))
+    end
+  end
+
   def feed(conn, %{"limit" => limit, "offset" => offset} = _params) do
     current_user = RealWorldWeb.Guardian.Plug.current_resource(conn)
 
