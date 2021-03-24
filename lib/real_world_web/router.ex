@@ -12,19 +12,16 @@ defmodule RealWorldWeb.Router do
   scope "/", RealWorldWeb do
     pipe_through :api
 
-    resources "/users", UserController, only: [:create]
-    get("/user", UserController, :show)
-    put("/user", UserController, :update)
-    post("/users/login", SessionController, :create)
+    resources("/users", UserController,  singleton: true, only: [:create]) do
+      post("/login", SessionController, :create)
+    end
+    resources("/user", UserController, singleton: true, only: [:show, :update])
 
-    get("/profiles/:username", ProfileController, :show)
+    resources("/profiles", ProfileController, param: "username", only: [:show])
     post("/profiles/:username/follow", ProfileController, :follow)
     delete("/profiles/:username/follow", ProfileController, :unfollow)
 
-    resources "/articles", ArticleController, only: [:index, :create]
-    get "/articles/feed", ArticleController, :feed
-    get("/articles/:slug", ArticleController, :show)
-    put("/articles/:slug", ArticleController, :update)
-    delete("/articles/:slug", ArticleController, :delete)
+    get("/articles/feed", ArticleController, :feed)
+    resources("/articles", ArticleController, param: "slug", except: [:new, :edit])
   end
 end
