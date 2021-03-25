@@ -22,6 +22,8 @@ defmodule RealWorldWeb.Router do
     delete("/profiles/:username/follow", ProfileController, :unfollow)
 
     get("/articles/feed", ArticleController, :feed)
-    resources("/articles", ArticleController, param: "slug", except: [:new, :edit])
+    resources("/articles", ArticleController, param: "slug", except: [:new, :edit]) do
+      resources("/comments", CommentController, only: [:index])
+    end
   end
 end

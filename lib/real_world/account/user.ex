@@ -3,6 +3,7 @@ defmodule RealWorld.Account.User do
   import Ecto.Changeset
 
   alias RealWorld.CMS.Article
+  alias RealWorld.CMS.Comment
 
   @required_fields ~w(email username password)a
   @optional_fields ~w(bio image)a
@@ -14,6 +15,7 @@ defmodule RealWorld.Account.User do
     field :password, :string
     field :username, :string
     has_many :articles, Article
+    has_many :comments, Comment
 
     many_to_many :followees, __MODULE__,
       join_through: RealWorld.Account.Following,

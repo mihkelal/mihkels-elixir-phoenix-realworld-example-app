@@ -12,6 +12,7 @@ defmodule RealWorld.CMS do
   alias RealWorld.Account.Following
   alias RealWorld.Account.User
   alias RealWorld.CMS.Article
+  alias RealWorld.CMS.Comment
 
   def list_articles(%{} = params \\ %{}) do
     case params[:author] && Account.get_user_by_username(params[:author]) do
@@ -73,5 +74,39 @@ defmodule RealWorld.CMS do
 
   def change_article(%Article{} = article, attrs \\ %{}) do
     Article.changeset(article, attrs)
+  end
+
+  def list_comments do
+    Repo.all(Comment)
+  end
+
+  def list_comments_by_article(%Article{} = article) do
+    article
+    |> Ecto.assoc(:comments)
+    |> join(:inner, [c], u in User, on: c.user_id == u.id)
+    |> preload(:user)
+    |> Repo.all()
+  end
+
+  def get_comment!(id), do: Repo.get!(Comment, id)
+
+  def create_comment(attrs \\ %{}) do
+    %Comment{}
+    |> Comment.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_comment(%Comment{} = comment, attrs) do
+    comment
+    |> Comment.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_comment(%Comment{} = comment) do
+    Repo.delete(comment)
+  end
+
+  def change_comment(%Comment{} = comment, attrs \\ %{}) do
+    Comment.changeset(comment, attrs)
   end
 end

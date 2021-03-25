@@ -3,6 +3,7 @@ defmodule RealWorld.CMS.Article do
   import Ecto.Changeset
 
   alias RealWorld.Account.User
+  alias RealWorld.CMS.Comment
 
   @required_fields ~w(title description body user_id)a
 
@@ -13,6 +14,7 @@ defmodule RealWorld.CMS.Article do
     field :slug, :string
     field :title, :string
     belongs_to :user, User
+    has_many :comments, Comment
 
     timestamps()
   end
