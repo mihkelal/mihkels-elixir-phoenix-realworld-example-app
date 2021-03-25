@@ -1,6 +1,7 @@
 defmodule RealWorldWeb.CommentController do
   use RealWorldWeb, :controller
 
+  alias RealWorld.Repo
   alias RealWorld.CMS
 
   action_fallback RealWorldWeb.FallbackController
@@ -12,5 +13,22 @@ defmodule RealWorldWeb.CommentController do
       |> CMS.list_comments_by_article()
 
     render(conn, "index.json", comments: comments)
+  end
+
+  def create(conn, %{"article_slug" => article_slug, "comment" => comment_params} = _params) do
+    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    article = CMS.get_article_by_slug!(article_slug)
+
+    case CMS.create_comment(
+           Map.merge(comment_params, %{"user_id" => user.id, "article_id" => article.id})
+         ) do
+      {:ok, comment} ->
+        render(conn, "show.json", comment: Repo.preload(comment, :user))
+
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render("error.json", message: inspect(changeset.errors))
+    end
   end
 end

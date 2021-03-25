@@ -5,7 +5,7 @@ defmodule RealWorld.CMS.Comment do
   alias RealWorld.Account.User
   alias RealWorld.CMS.Article
 
-  @required_fields ~w(body)a
+  @required_fields ~w(body user_id article_id)a
 
   schema "comments" do
     field :body, :string

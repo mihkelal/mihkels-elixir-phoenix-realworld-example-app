@@ -23,7 +23,7 @@ defmodule RealWorldWeb.Router do
 
     get("/articles/feed", ArticleController, :feed)
     resources("/articles", ArticleController, param: "slug", except: [:new, :edit]) do
-      resources("/comments", CommentController, only: [:index])
+      resources("/comments", CommentController, only: [:index, :create])
     end
   end
 end
