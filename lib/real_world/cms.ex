@@ -80,6 +80,14 @@ defmodule RealWorld.CMS do
     Repo.all(Comment)
   end
 
+  def list_comments_by_article(%Article{} = article) do
+    article
+    |> Ecto.assoc(:comments)
+    |> join(:inner, [c], u in User, on: c.user_id == u.id)
+    |> preload(:user)
+    |> Repo.all()
+  end
+
   def get_comment!(id), do: Repo.get!(Comment, id)
 
   def create_comment(attrs \\ %{}) do
