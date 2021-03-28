@@ -20,4 +20,8 @@ defmodule RealWorldWeb.CommentView do
       author: render_one(comment.user, ProfileView, "profile.json", as: :user, following: false)
     }
   end
+
+  def render("error.json", %{message: message}) do
+    %{errors: %{message: [message]}}
+  end
 end
