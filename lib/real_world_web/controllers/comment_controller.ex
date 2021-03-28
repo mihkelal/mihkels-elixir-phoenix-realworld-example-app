@@ -31,4 +31,29 @@ defmodule RealWorldWeb.CommentController do
         |> render("error.json", message: inspect(changeset.errors))
     end
   end
+
+  def delete(conn, %{"id" => id} = _params) do
+    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+
+    comment =
+      id
+      |> String.to_integer()
+      |> CMS.get_comment!()
+      |> Repo.preload(:user)
+
+    with true <- user == comment.user,
+         {:ok, comment} <- CMS.delete_comment(comment) do
+      render(conn, "show.json", comment: comment)
+    else
+      false ->
+        conn
+        |> put_status(:unauthorized)
+        |> render("error.json", message: "You can only delete your own comments")
+
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render("error.json", message: inspect(changeset.errors))
+    end
+  end
 end
