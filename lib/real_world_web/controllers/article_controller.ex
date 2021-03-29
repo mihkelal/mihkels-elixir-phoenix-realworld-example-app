@@ -21,7 +21,7 @@ defmodule RealWorldWeb.ArticleController do
 
   def show(conn, %{"slug" => slug} = _params) do
     case CMS.get_article_by_slug!(slug) do
-      %Article{} = article -> render(conn, "show.json", article: article)
+      %Article{} = article -> render(conn, "show.json", article: Repo.preload(article, :favorites))
       nil -> send_resp(conn, 404, "")
     end
   end
