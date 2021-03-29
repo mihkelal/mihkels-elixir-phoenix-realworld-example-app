@@ -4,6 +4,7 @@ defmodule RealWorld.Account.User do
 
   alias RealWorld.CMS.Article
   alias RealWorld.CMS.Comment
+  alias RealWorld.CMS.Favorite
 
   @required_fields ~w(email username password)a
   @optional_fields ~w(bio image)a
@@ -15,6 +16,11 @@ defmodule RealWorld.Account.User do
     field :password, :string
     field :username, :string
     has_many :articles, Article
+
+    many_to_many :favorite_articles, Favorite,
+      join_through: RealWorld.CMS.Favorite,
+      join_keys: [user_id: :id, article_id: :id]
+
     has_many :comments, Comment
 
     many_to_many :followees, __MODULE__,
