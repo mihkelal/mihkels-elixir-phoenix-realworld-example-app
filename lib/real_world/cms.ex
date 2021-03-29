@@ -13,12 +13,29 @@ defmodule RealWorld.CMS do
   alias RealWorld.Account.User
   alias RealWorld.CMS.Article
   alias RealWorld.CMS.Comment
+  alias RealWorld.CMS.Favorite
 
   def list_articles(%{} = params \\ %{}) do
-    case params[:author] && Account.get_user_by_username(params[:author]) do
-      %User{} = user -> Ecto.assoc(user, :articles)
-      nil -> Article
-    end
+    articles =
+      cond do
+        params[:author] ->
+          params[:author]
+          |> Account.get_user_by_username()
+          |> Ecto.assoc(:articles)
+
+        params[:favorited] ->
+          favorited_user = Account.get_user_by_username(params[:favorited])
+
+          Favorite
+          |> where(user_id: ^favorited_user.id)
+          |> Repo.all()
+          |> Ecto.assoc(:article)
+
+        true ->
+          Article
+      end
+
+    articles
     |> default_articles_list_options
     |> limit(^params[:limit])
     |> offset(^params[:offset])
@@ -40,7 +57,7 @@ defmodule RealWorld.CMS do
   defp default_articles_list_options(query) do
     query
     |> join(:inner, [a], u in User, on: a.user_id == u.id)
-    |> preload(:user)
+    |> preload([:user, :favorites])
     |> limit(@default_article_pagination_limit)
     |> offset(@default_article_offset)
     |> order_by(desc: :inserted_at)
@@ -74,6 +91,40 @@ defmodule RealWorld.CMS do
 
   def change_article(%Article{} = article, attrs \\ %{}) do
     Article.changeset(article, attrs)
+  end
+
+  def favorite_article(%User{} = user, %Article{} = article) do
+    %Favorite{}
+    |> Favorite.changeset(%{user_id: user.id, article_id: article.id})
+    |> Repo.insert()
+  end
+
+  def load_favorite(article, nil), do: article
+
+  def load_favorite(article, user) do
+    case find_favorite(article, user) do
+      %Favorite{} -> Map.put(article, :favorited, true)
+      _ -> article
+    end
+  end
+
+  def load_favorites(articles, nil), do: articles
+
+  def load_favorites(articles, user) do
+    articles
+    |> Enum.map(fn article -> load_favorite(article, user) end)
+  end
+
+  defp find_favorite(%Article{} = article, %User{} = user) do
+    query = from(f in Favorite, where: f.article_id == ^article.id and f.user_id == ^user.id)
+
+    Repo.one(query)
+  end
+
+  def unfavorite_article(%User{} = user, %Article{} = article) do
+    article
+    |> find_favorite(user)
+    |> Repo.delete()
   end
 
   def list_comments do

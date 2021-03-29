@@ -10,7 +10,11 @@ defmodule RealWorldWeb.ArticleController do
   plug Guardian.Plug.EnsureAuthenticated when action in [:feed, :create]
 
   def index(conn, %{"limit" => limit, "offset" => offset} = params) do
-    articles = CMS.list_articles(%{author: params["author"], limit: limit, offset: offset})
+    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+
+    articles =
+      CMS.list_articles(%{author: params["author"], favorited: params["favorited"], limit: limit, offset: offset})
+      |> CMS.load_favorites(user)
 
     render(conn, "index.json", articles: articles)
   end
@@ -84,8 +88,55 @@ defmodule RealWorldWeb.ArticleController do
   def feed(conn, %{"limit" => limit, "offset" => offset} = _params) do
     current_user = RealWorldWeb.Guardian.Plug.current_resource(conn)
 
-    articles = CMS.list_feed(%{user: current_user, limit: limit, offset: offset})
+    articles =
+      CMS.list_feed(%{user: current_user, limit: limit, offset: offset})
+      |> CMS.load_favorites(current_user)
 
     render(conn, "index.json", articles: articles)
+  end
+
+  def favorite(conn, %{"article_slug" => article_slug} = _params) do
+    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    article = CMS.get_article_by_slug!(article_slug)
+
+    case CMS.favorite_article(user, article) do
+      {:ok, _favorite} ->
+        article =
+          article
+          |> Repo.preload([:user, :favorites])
+          |> CMS.load_favorite(user)
+
+        render(conn, "show.json", article: Repo.preload(article, :user))
+
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render("error.json", message: inspect(changeset.errors))
+    end
+  end
+
+  def unfavorite(conn, %{"article_slug" => article_slug} = _params) do
+    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    article = CMS.get_article_by_slug!(article_slug)
+
+    with true <- user == article.user,
+         {:ok, _favorite} <- CMS.unfavorite_article(user, article) do
+      article =
+        article
+        |> Repo.preload([:user, :favorites])
+        |> CMS.load_favorite(user)
+
+      render(conn, "show.json", article: Repo.preload(article, :user))
+    else
+      false ->
+        conn
+        |> put_status(:unauthorized)
+        |> render("error.json", message: "You can only unfavorite your own articles")
+
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render("error.json", message: inspect(changeset.errors))
+    end
   end
 end

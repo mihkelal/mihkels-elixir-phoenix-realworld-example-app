@@ -24,6 +24,8 @@ defmodule RealWorldWeb.Router do
     get("/articles/feed", ArticleController, :feed)
     resources("/articles", ArticleController, param: "slug", except: [:new, :edit]) do
       resources("/comments", CommentController, only: [:index, :create, :delete])
+      post("/favorite", ArticleController, :favorite)
+      delete("/favorite", ArticleController, :unfavorite)
     end
   end
 end

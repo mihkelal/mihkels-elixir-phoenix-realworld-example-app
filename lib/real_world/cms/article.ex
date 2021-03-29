@@ -13,6 +13,7 @@ defmodule RealWorld.CMS.Article do
     field :description, :string
     field :slug, :string
     field :title, :string
+    field(:favorited, :boolean, virtual: true)
     belongs_to :user, User
     has_many :comments, Comment
     has_many :favorites, Favorite

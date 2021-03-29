@@ -23,8 +23,8 @@ defmodule RealWorldWeb.ArticleView do
       tagList: [],
       createdAt: article.inserted_at,
       updatedAt: article.updated_at,
-      favorited: false,
-      favoritesCount: article.favorites_count,
+      favorited: !!article.favorited,
+      favoritesCount: length(article.favorites),
       author: render_one(article.user, ProfileView, "profile.json", as: :user, following: false)
     }
   end
