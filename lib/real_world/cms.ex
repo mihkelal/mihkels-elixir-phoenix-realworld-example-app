@@ -14,6 +14,7 @@ defmodule RealWorld.CMS do
   alias RealWorld.CMS.Article
   alias RealWorld.CMS.Comment
   alias RealWorld.CMS.Favorite
+  alias RealWorld.CMS.Tag
 
   def list_articles(%{} = params \\ %{}) do
     articles =
@@ -159,5 +160,13 @@ defmodule RealWorld.CMS do
 
   def change_comment(%Comment{} = comment, attrs \\ %{}) do
     Comment.changeset(comment, attrs)
+  end
+
+  def list_tags do
+    Ecto.Adapters.SQL.query!(Repo, "select count(*) as tag_count, ut.tag
+          from articles, lateral unnest(articles.tag_list) as ut(tag)
+          group by ut.tag
+          order by tag_count desc limit 5;").rows
+    |> Enum.map(fn v -> Enum.at(v, 1) end)
   end
 end

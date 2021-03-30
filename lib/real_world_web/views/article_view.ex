@@ -20,7 +20,7 @@ defmodule RealWorldWeb.ArticleView do
       title: article.title,
       description: article.description,
       body: article.body,
-      tagList: [],
+      tagList: article.tag_list,
       createdAt: article.inserted_at,
       updatedAt: article.updated_at,
       favorited: !!article.favorited,
