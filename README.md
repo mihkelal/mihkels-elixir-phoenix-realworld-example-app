@@ -1,19 +1,40 @@
-# RealWorld
+# ![RealWorld Example App](logo.png)
+> Elixir (Phoenix) codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld-example-apps) spec and API.
 
-To start your Phoenix server:
+This codebase was created to demonstrate a fully fledged backend application built with **Elixir and Phoenix** including CRUD operations, authentication, routing, pagination, and more.
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.setup`
-  * Start Phoenix endpoint with `mix phx.server`
+Some code was borrowed from [existing Elixir backend repo](https://github.com/gothinkster/elixir-phoenix-realworld-example-app)
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+For more information on how to this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+## Installing / Getting started
 
-## Learn more
+To run this project, you will need to install the following dependencies on your system:
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+* [Elixir](https://elixir-lang.org/install.html)
+* [Phoenix](https://hexdocs.pm/phoenix/installation.html)
+* [PostgreSQL](https://www.postgresql.org/download/macosx/)
+
+To get started, run the following commands in your project folder:
+
+```shell
+cp config/dev.exs.example config/dev.exs  # creates the project's configuration file
+mix deps.get  # installs the dependencies
+mix ecto.create  # creates the database.
+mix ecto.migrate  # run the database migrations.
+mix phx.server  # run the application.
+```
+
+This is a backend project, you won't be able to go to localhost:4000 and see an aplication.
+
+In order to see the [Conduit](https://demo.realworld.io/#/) frontend you will need to download and setup one of the [frontend projects](https://demo.realworld.io/#/) and set it up to consume this apps api. Typically this can be done by finding the `API_URL` and setting it to `localhost:4000`.
+
+This will generate a `doc/` directory with a documentation in HTML. To view the documentation, open the `index.html` file in the generated directory.
+
+## Style guide
+
+This project uses [mix format](https://hexdocs.pm/mix/master/Mix.Tasks.Format.html). You can find the configuration file for the formatter in the `.formatter.exs` file.
+
+## Licensing
+
+MIT © Mihkel Alavere
