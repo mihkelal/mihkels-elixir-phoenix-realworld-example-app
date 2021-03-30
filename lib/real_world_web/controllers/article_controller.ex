@@ -7,10 +7,10 @@ defmodule RealWorldWeb.ArticleController do
 
   action_fallback RealWorldWeb.FallbackController
 
-  plug Guardian.Plug.EnsureAuthenticated when action in [:feed, :create]
+  plug Guardian.Plug.EnsureAuthenticated when action in [:feed, :create, :favorite, :unfavorite]
 
   def index(conn, %{"limit" => limit, "offset" => offset} = params) do
-    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    user = conn.assigns.current_user
 
     articles =
       CMS.list_articles(%{
@@ -35,7 +35,7 @@ defmodule RealWorldWeb.ArticleController do
   end
 
   def create(conn, %{"article" => article_params} = _params) do
-    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    user = conn.assigns.current_user
 
     article_params =
       article_params
@@ -56,7 +56,7 @@ defmodule RealWorldWeb.ArticleController do
   end
 
   def update(conn, %{"slug" => slug, "article" => article_params} = _params) do
-    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    user = conn.assigns.current_user
     article = CMS.get_article_by_slug!(slug)
 
     with true <- user == article.user,
@@ -77,7 +77,7 @@ defmodule RealWorldWeb.ArticleController do
   end
 
   def delete(conn, %{"slug" => slug} = _params) do
-    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    user = conn.assigns.current_user
     article = CMS.get_article_by_slug!(slug)
 
     with true <- user == article.user,
@@ -97,7 +97,7 @@ defmodule RealWorldWeb.ArticleController do
   end
 
   def feed(conn, %{"limit" => limit, "offset" => offset} = _params) do
-    current_user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    current_user = conn.assigns.current_user
 
     articles =
       CMS.list_feed(%{user: current_user, limit: limit, offset: offset})
@@ -107,7 +107,7 @@ defmodule RealWorldWeb.ArticleController do
   end
 
   def favorite(conn, %{"article_slug" => article_slug} = _params) do
-    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    user = conn.assigns.current_user
     article = CMS.get_article_by_slug!(article_slug)
 
     case CMS.favorite_article(user, article) do
@@ -127,7 +127,7 @@ defmodule RealWorldWeb.ArticleController do
   end
 
   def unfavorite(conn, %{"article_slug" => article_slug} = _params) do
-    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    user = conn.assigns.current_user
     article = CMS.get_article_by_slug!(article_slug)
 
     with true <- user == article.user,

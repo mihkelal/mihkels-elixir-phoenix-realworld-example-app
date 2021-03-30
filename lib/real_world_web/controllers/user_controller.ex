@@ -23,14 +23,14 @@ defmodule RealWorldWeb.UserController do
   end
 
   def show(conn, _params) do
-    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    user = conn.assigns.current_user
     token = RealWorldWeb.Guardian.Plug.current_token(conn)
 
     render(conn, "show.json", jwt: token, user: user)
   end
 
   def update(conn, %{} = user_params) do
-    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    user = conn.assigns.current_user
 
     case Account.update_user(user, user_params) do
       {:ok, user} ->

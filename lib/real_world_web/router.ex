@@ -7,6 +7,7 @@ defmodule RealWorldWeb.Router do
     plug(Guardian.Plug.Pipeline, module: RealWorldWeb.Guardian, error_handler: RealWorldWeb.AuthErrorHandler)
     plug(Guardian.Plug.VerifyHeader, realm: "Token")
     plug(Guardian.Plug.LoadResource, allow_blank: true)
+    plug(RealWorldWeb.Plugs.CurrentUser)
   end
 
   scope "/", RealWorldWeb do
