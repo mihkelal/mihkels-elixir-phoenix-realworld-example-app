@@ -27,5 +27,6 @@ defmodule RealWorldWeb.Router do
       post("/favorite", ArticleController, :favorite)
       delete("/favorite", ArticleController, :unfavorite)
     end
+    resources("/tags", TagController, only: [:index])
   end
 end

@@ -6,14 +6,15 @@ defmodule RealWorld.CMS.Article do
   alias RealWorld.CMS.Comment
   alias RealWorld.CMS.Favorite
 
-  @required_fields ~w(title description body user_id)a
+  @required_fields ~w(title description body tag_list user_id)a
 
   schema "articles" do
     field :body, :string
     field :description, :string
     field :slug, :string
     field :title, :string
-    field(:favorited, :boolean, virtual: true)
+    field :tag_list, {:array, :string}
+    field :favorited, :boolean, virtual: true
     belongs_to :user, User
     has_many :comments, Comment
     has_many :favorites, Favorite

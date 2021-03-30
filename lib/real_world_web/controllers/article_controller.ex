@@ -13,7 +13,12 @@ defmodule RealWorldWeb.ArticleController do
     user = RealWorldWeb.Guardian.Plug.current_resource(conn)
 
     articles =
-      CMS.list_articles(%{author: params["author"], favorited: params["favorited"], limit: limit, offset: offset})
+      CMS.list_articles(%{
+        author: params["author"],
+        favorited: params["favorited"],
+        limit: limit,
+        offset: offset
+      })
       |> CMS.load_favorites(user)
 
     render(conn, "index.json", articles: articles)
@@ -21,21 +26,27 @@ defmodule RealWorldWeb.ArticleController do
 
   def show(conn, %{"slug" => slug} = _params) do
     case CMS.get_article_by_slug!(slug) do
-      %Article{} = article -> render(conn, "show.json", article: Repo.preload(article, :favorites))
-      nil -> send_resp(conn, 404, "")
+      %Article{} = article ->
+        render(conn, "show.json", article: Repo.preload(article, :favorites))
+
+      nil ->
+        send_resp(conn, 404, "")
     end
   end
 
   def create(conn, %{"article" => article_params} = _params) do
     user = RealWorldWeb.Guardian.Plug.current_resource(conn)
 
-    article_params = Map.put(article_params, "user_id", user.id)
+    article_params =
+      article_params
+      |> snake_case_keys()
+      |> Map.put("user_id", user.id)
 
     case CMS.create_article(article_params) do
       {:ok, article} ->
         conn
         |> put_status(:created)
-        |> render("show.json", article: Repo.preload(article, :user))
+        |> render("show.json", article: Repo.preload(article, [:user, :favorites]))
 
       {:error, changeset} ->
         conn
@@ -49,9 +60,9 @@ defmodule RealWorldWeb.ArticleController do
     article = CMS.get_article_by_slug!(slug)
 
     with true <- user == article.user,
-         {:ok, article} <- CMS.update_article(article, article_params) do
+         {:ok, article} <- CMS.update_article(article, snake_case_keys(article_params)) do
       conn
-      |> render("show.json", article: Repo.preload(article, :user))
+      |> render("show.json", article: Repo.preload(article, [:user, :favorites]))
     else
       false ->
         conn
@@ -138,5 +149,11 @@ defmodule RealWorldWeb.ArticleController do
         |> put_status(:unprocessable_entity)
         |> render("error.json", message: inspect(changeset.errors))
     end
+  end
+
+  defp snake_case_keys(%{} = params) do
+    params
+    |> Enum.map(fn {k, v} -> {Phoenix.Naming.underscore(k), v} end)
+    |> Enum.into(%{})
   end
 end
