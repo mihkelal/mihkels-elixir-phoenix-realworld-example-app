@@ -11,7 +11,7 @@ defmodule RealWorldWeb.ProfileController do
   def show(conn, %{"username" => username}) do
     case RealWorld.Account.get_user_by_username(username) do
       %User{} = user ->
-        current_user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+        current_user = conn.assigns.current_user
 
         render(conn, "show.json", user: user, following: Account.following_exists?(current_user, user))
 
@@ -23,7 +23,7 @@ defmodule RealWorldWeb.ProfileController do
   def follow(conn, %{"username" => username}) do
     case RealWorld.Account.get_user_by_username(username) do
       %User{} = user ->
-        current_user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+        current_user = conn.assigns.current_user
 
         case Account.create_following(current_user, user) do
           {:ok, _following} ->
@@ -43,7 +43,7 @@ defmodule RealWorldWeb.ProfileController do
   def unfollow(conn, %{"username" => username}) do
     case RealWorld.Account.get_user_by_username(username) do
       %User{} = user ->
-        current_user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+        current_user = conn.assigns.current_user
 
         case Account.delete_following(current_user, user) do
           {:ok, _following} ->

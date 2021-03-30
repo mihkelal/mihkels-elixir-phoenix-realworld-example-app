@@ -16,7 +16,7 @@ defmodule RealWorldWeb.CommentController do
   end
 
   def create(conn, %{"article_slug" => article_slug, "comment" => comment_params} = _params) do
-    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    user = conn.assigns.current_user
     article = CMS.get_article_by_slug!(article_slug)
 
     case CMS.create_comment(
@@ -33,7 +33,7 @@ defmodule RealWorldWeb.CommentController do
   end
 
   def delete(conn, %{"id" => id} = _params) do
-    user = RealWorldWeb.Guardian.Plug.current_resource(conn)
+    user = conn.assigns.current_user
 
     comment =
       id
