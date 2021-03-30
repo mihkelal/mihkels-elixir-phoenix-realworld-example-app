@@ -7,7 +7,7 @@ defmodule RealWorldWeb.ArticleController do
 
   action_fallback RealWorldWeb.FallbackController
 
-  plug Guardian.Plug.EnsureAuthenticated when action in [:feed, :create]
+  plug Guardian.Plug.EnsureAuthenticated when action in [:feed, :create, :favorite, :unfavorite]
 
   def index(conn, %{"limit" => limit, "offset" => offset} = params) do
     user = RealWorldWeb.Guardian.Plug.current_resource(conn)
